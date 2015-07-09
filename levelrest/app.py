@@ -10,6 +10,7 @@ prefix_symbol = "$"
 app = Flask(__name__)
 db = plyvel.DB("testdb", create_if_missing=True)
 
+
 @app.route("/<path:path>", methods=["GET"])
 def get(path):
     segments = path.split("/")
@@ -30,13 +31,14 @@ def get(path):
         for key, value in db.iterator(
             start=start_key, stop=stop_key,
             include_stop=True,
-            reverse=reverse):
+            reverse=reverse
+        ):
             result.append({"key": key, "value": value})
             print "key %s, value %s" % (key, value)
         return jsonify(data=result)
 
     key = str((prefix_symbol.join(path.split("/"))))
-    value =  db.get(key)
+    value = db.get(key)
     if value is not None:
         return jsonify({
             "key": key,
@@ -45,11 +47,13 @@ def get(path):
 
     return jsonify(message="Not Found"), 404
 
+
 @app.route("/<path:path>", methods=["POST", "PUT"])
 def put(path):
     key = str((prefix_symbol.join(path.split("/"))))
     db.put(str(key), request.data)
     return "%s %s" % (path, request.data)
+
 
 @app.route("/batch", methods=["POST", "PUT"])
 def batch_put():
