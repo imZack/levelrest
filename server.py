@@ -1,7 +1,6 @@
-import os
 from gevent.wsgi import WSGIServer
-from gevent import socket
 from levelrest.app import app
+import os
 
 # listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 # sockname = './' + os.path.basename(__file__) + '.sock'
@@ -9,6 +8,6 @@ from levelrest.app import app
 #     os.remove(sockname)
 # listener.bind(sockname)
 # listener.listen(1)
-
-http_server = WSGIServer(('', 5000), app)
+port = os.environ.get("PORT", 5000)
+http_server = WSGIServer(('', int(port)), app)
 http_server.serve_forever()

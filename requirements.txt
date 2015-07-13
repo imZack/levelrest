@@ -1,3 +1,4 @@
 plyvel
 flask
 gevent
+msgpack-python

@@ -1,14 +1,17 @@
 from flask import Flask
 from flask import request
 from flask import jsonify
+import msgpack
 import plyvel
 import re
+import os
 
 range_pattern = re.compile(ur"([\S]+)[\.]{3}([\S]+)")
 
 prefix_symbol = "$"
 app = Flask(__name__)
-db = plyvel.DB("testdb", create_if_missing=True)
+db_path = os.environ.get("DB_PATH", "leveldata")
+db = plyvel.DB(db_path, create_if_missing=True)
 
 
 @app.route("/<path:path>", methods=["GET"])
@@ -57,7 +60,8 @@ def put(path):
 
 @app.route("/batch", methods=["POST", "PUT"])
 def batch_put():
-    data = request.get_json(silent=True)
+    # data = request.get_json(silent=True)
+    data = msgpack.unpackb(request.data)
     if data is None or data is False:
         return jsonify(message="Invaild format"), 400
 
